@@ -113,7 +113,4 @@ Public datasets arrive pre-cleaned and pre-structured. They are useful for learn
 ---
 
 ## About
-
-**Atharva Patil** is a data engineer with production experience across financial services, healthcare claims processing, and edtech platforms. This project reflects an approach to data engineering centered on pipeline reliability, transformation transparency, and delivering data that practitioners can build on with confidence.
-
 [LinkedIn](#) · [GitHub](https://github.com/AtharvaGitProfile)
