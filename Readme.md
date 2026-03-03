@@ -4,7 +4,7 @@
 ![Banner](./DB.png)
 
 <p align="center">
-  <a href="./demo.html"><strong>▶ &nbsp;Click here — View the Production Demo</strong></a>
+  <a href="https://AtharvaGitProfile.github.io/Databricks-ML-Platform/demo.html"><strong>▶ &nbsp;Click here — View the Production Demo</strong></a>
   &nbsp;&nbsp;·&nbsp;&nbsp;
   <a href="https://github.com/AtharvaGitProfile">GitHub</a>
   &nbsp;&nbsp;·&nbsp;&nbsp;
