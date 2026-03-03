@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML Data Platform — Production Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#080c10;--surface:#0d1117;--surface2:#161b22;--border:#21262d;
+    --accent:#e05c2a;--accent2:#f0883e;--green:#3fb950;--blue:#58a6ff;
+    --purple:#bc8cff;--text:#e6edf3;--muted:#7d8590;
+    --font-display:'Syne',sans-serif;--font-mono:'JetBrains Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-display);overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(224,92,42,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(224,92,42,.03) 1px,transparent 1px);background-size:40px 40px;z-index:0;pointer-events:none;}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:rgba(8,12,16,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+  .nav-logo{font-size:13px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-family:var(--font-mono);}
+  .nav-tabs{display:flex;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px;}
+  .nav-tab{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--muted);border:none;background:none;font-family:var(--font-display);}
+  .nav-tab.active{background:var(--accent);color:#fff;}
+  .nav-tab:hover:not(.active){color:var(--text);}
+
+  /* SECTIONS */
+  .section{display:none;position:relative;z-index:1;min-height:100vh;padding:100px 40px 80px;max-width:1100px;margin:0 auto;animation:sIn .4s ease both;}
+  .section.active{display:block;}
+  #section-overview{display:none;align-items:center;justify-content:center;}
+  #section-overview.active{display:flex;}
+  @keyframes sIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+  /* HERO */
+  .hero-inner{max-width:860px;text-align:center;}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(224,92,42,.1);border:1px solid rgba(224,92,42,.3);border-radius:100px;padding:6px 16px;font-size:11px;font-family:var(--font-mono);color:var(--accent2);letter-spacing:.05em;margin-bottom:32px;animation:fadeUp .6s ease both;}
+  .badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
+  h1{font-size:clamp(34px,6vw,68px);font-weight:800;line-height:1.05;letter-spacing:-.02em;margin-bottom:24px;animation:fadeUp .6s .1s ease both;}
+  h1 .hl{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .hero-sub{font-size:17px;color:var(--muted);line-height:1.7;max-width:580px;margin:0 auto 48px;font-weight:400;animation:fadeUp .6s .2s ease both;}
+  .hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;animation:fadeUp .6s .3s ease both;}
+  .btn-p{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#fff;padding:14px 28px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;border:none;transition:all .2s;font-family:var(--font-display);}
+  .btn-p:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(224,92,42,.4);}
+  .btn-s{display:inline-flex;align-items:center;gap:10px;background:var(--surface2);color:var(--text);padding:14px 28px;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;border:1px solid var(--border);transition:all .2s;font-family:var(--font-display);}
+  .btn-s:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px);}
+  .stats-bar{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;margin-top:60px;padding-top:48px;border-top:1px solid var(--border);animation:fadeUp .6s .4s ease both;}
+  .stat{text-align:center;}
+  .stat-num{font-size:30px;font-weight:800;color:var(--accent);display:block;}
+  .stat-label{font-size:11px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;}
+
+  /* SECTION HEADER */
+  .sec-header{margin-bottom:44px;}
+  .sec-label{font-size:11px;font-family:var(--font-mono);color:var(--accent);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px;}
+  .sec-title{font-size:clamp(26px,4vw,44px);font-weight:800;letter-spacing:-.02em;line-height:1.1;}
+  .sec-desc{font-size:15px;color:var(--muted);margin-top:14px;max-width:580px;line-height:1.7;}
+
+  /* PIPELINE */
+  .pipe-steps{display:grid;gap:2px;margin-bottom:40px;}
+  .pipe-step{display:grid;grid-template-columns:44px 1fr auto;gap:18px;align-items:start;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;transition:border-color .2s;cursor:default;}
+  .pipe-step:hover{border-color:rgba(224,92,42,.4);}
+  .pipe-step.done{border-color:rgba(63,185,80,.25);}
+  .pipe-step.pending{opacity:.5;}
+  .step-n{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;font-family:var(--font-mono);background:var(--surface2);border:1px solid var(--border);flex-shrink:0;color:var(--muted);}
+  .pipe-step.done .step-n{background:rgba(63,185,80,.12);border-color:var(--green);color:var(--green);}
+  .step-title{font-size:15px;font-weight:700;margin-bottom:5px;}
+  .step-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+  .step-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;}
+  .tag{font-size:11px;font-family:var(--font-mono);padding:2px 9px;border-radius:100px;border:1px solid var(--border);color:var(--muted);}
+  .tag.o{border-color:rgba(224,92,42,.4);color:var(--accent2);background:rgba(224,92,42,.07);}
+  .tag.g{border-color:rgba(63,185,80,.4);color:var(--green);background:rgba(63,185,80,.07);}
+  .tag.b{border-color:rgba(88,166,255,.4);color:var(--blue);background:rgba(88,166,255,.07);}
+  .tag.p{border-color:rgba(188,140,255,.4);color:var(--purple);background:rgba(188,140,255,.07);}
+  .step-status{font-size:11px;font-family:var(--font-mono);display:flex;align-items:center;gap:5px;white-space:nowrap;color:var(--muted);}
+  .sdot{width:6px;height:6px;border-radius:50%;}
+  .sdot.g{background:var(--green);box-shadow:0 0 5px var(--green);}
+  .sdot.gr{background:var(--muted);}
+
+  /* LAYERS */
+  .layers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:40px;}
+  @media(max-width:700px){.layers-grid{grid-template-columns:1fr;}.nav-tabs{gap:2px;}.nav-tab{padding:5px 8px;font-size:11px;}}
+  .layer-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;transition:all .25s;position:relative;overflow:hidden;}
+  .layer-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;}
+  .layer-card.bronze::before{background:linear-gradient(90deg,#cd7f32,#e8a962);}
+  .layer-card.silver::before{background:linear-gradient(90deg,#9ca3af,#d1d5db);}
+  .layer-card.gold::before{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
+  .layer-card:hover{border-color:rgba(224,92,42,.4);transform:translateY(-3px);}
+  .layer-icon{font-size:26px;margin-bottom:14px;}
+  .layer-name{font-size:19px;font-weight:800;margin-bottom:7px;}
+  .layer-sub{font-size:11px;font-family:var(--font-mono);color:var(--muted);margin-bottom:14px;letter-spacing:.05em;}
+  .layer-desc{font-size:13px;color:var(--muted);line-height:1.7;}
+  .layer-metrics{margin-top:18px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:14px;}
+  .metric{flex:1;}
+  .metric-val{font-size:17px;font-weight:800;font-family:var(--font-mono);}
+  .metric-key{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:2px;}
+  .bronze .metric-val{color:#e8a962;}
+  .silver .metric-val{color:#d1d5db;}
+  .gold .metric-val{color:#fbbf24;}
+
+  /* STACK */
+  .stack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+  .stack-row{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;transition:border-color .2s;}
+  .stack-row:hover{border-color:var(--accent);}
+  .stack-icon{width:34px;height:34px;border-radius:7px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+  .stack-name{font-size:13px;font-weight:700;}
+  .stack-cat{font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:2px;}
+
+  /* ROADMAP */
+  .rm-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:700px){.rm-grid{grid-template-columns:1fr;}}
+  .rm-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;}
+  .rm-card.built{border-color:rgba(63,185,80,.25);}
+  .rm-card.planned{border-color:rgba(88,166,255,.15);opacity:.8;}
+  .rm-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:var(--font-mono);letter-spacing:.1em;padding:2px 9px;border-radius:100px;margin-bottom:10px;}
+  .rm-badge.built{background:rgba(63,185,80,.08);color:var(--green);border:1px solid rgba(63,185,80,.3);}
+  .rm-badge.planned{background:rgba(88,166,255,.08);color:var(--blue);border:1px solid rgba(88,166,255,.25);}
+  .rm-title{font-size:15px;font-weight:700;margin-bottom:7px;}
+  .rm-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+
+  /* TERMINAL */
+  .terminal{background:#0d1117;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:28px;}
+  .t-bar{background:var(--surface2);border-bottom:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;gap:7px;}
+  .td{width:9px;height:9px;border-radius:50%;}
+  .td:nth-child(1){background:#ff5f57;}.td:nth-child(2){background:#ffbd2e;}.td:nth-child(3){background:#28ca41;}
+  .t-filename{font-size:11px;font-family:var(--font-mono);color:var(--muted);margin-left:7px;}
+  .t-body{padding:18px 22px;font-family:var(--font-mono);font-size:12px;line-height:1.9;}
+  .tl{display:flex;gap:8px;}
+  .tp{color:var(--accent);}
+  .tc{color:var(--text);}
+  .to{color:var(--muted);}
+  .ts{color:var(--green);}
+  .ti{color:var(--blue);}
+  .tw{color:#f0883e;}
+
+  /* FOOTER */
+  footer{position:relative;z-index:1;text-align:center;padding:36px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);font-family:var(--font-mono);}
+  footer a{color:var(--accent);text-decoration:none;}
+  footer a:hover{color:var(--accent2);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">⬡ ML·PLATFORM</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="show('overview')">Overview</button>
+    <button class="nav-tab" onclick="show('pipeline')">Pipeline</button>
+    <button class="nav-tab" onclick="show('layers')">Data Layers</button>
+    <button class="nav-tab" onclick="show('stack')">Stack</button>
+    <button class="nav-tab" onclick="show('roadmap')">Roadmap</button>
+  </div>
+</nav>
+
+<!-- OVERVIEW -->
+<div id="section-overview" class="section active" style="display:flex;align-items:center;justify-content:center;">
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="badge-dot"></span>Production · AWS + Databricks · Medallion Architecture</div>
+    <h1>Raw Video to<br><span class="hl">Business Intelligence</span></h1>
+    <p class="hero-sub">A production-grade data platform that ingests YouTube content, transcribes audio with AI, processes it through a Medallion architecture on Databricks, and delivers a clean analytics mart — fully automated, zero manual steps.</p>
+    <div class="hero-actions">
+      <button class="btn-p" onclick="show('pipeline')">▶ &nbsp;Explore the Pipeline</button>
+      <button class="btn-s" onclick="show('layers')">View Data Layers →</button>
+    </div>
+    <div class="stats-bar">
+      <div class="stat"><span class="stat-num">6</span><span class="stat-label">Pipeline Stages</span></div>
+      <div class="stat"><span class="stat-num">11</span><span class="stat-label">Technologies</span></div>
+      <div class="stat"><span class="stat-num">3NF</span><span class="stat-label">Data Model</span></div>
+      <div class="stat"><span class="stat-num">0</span><span class="stat-label">Manual Steps</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PIPELINE -->
+<div id="section-pipeline" class="section">
+  <div class="sec-header">
+    <div class="sec-label">// Stage by Stage</div>
+    <h2 class="sec-title">How Data Moves Through the System</h2>
+    <p class="sec-desc">Six sequential stages take raw YouTube data from API response to query-ready analytics, all running automatically.</p>
+  </div>
+  <div class="pipe-steps">
+    <div class="pipe-step done">
+      <div class="step-n">01</div>
+      <div>
+        <div class="step-title">YouTube API + Whisper Extraction</div>
+        <div class="step-desc">Airflow DAG connects to the YouTube Data API and collects video metadata — titles, descriptions, view counts, likes, comments, duration, and publish dates. OpenAI Whisper transcribes each video's audio track. Metadata lands in S3 as JSON; transcriptions as Parquet.</div>
+        <div class="step-tags"><span class="tag o">Apache Airflow</span><span class="tag o">YouTube API</span><span class="tag o">OpenAI Whisper</span><span class="tag g">AWS S3</span></div>
+      </div>
+      <div class="step-status"><span class="sdot g"></span>Complete</div>
+    </div>
+    <div class="pipe-step done">
+      <div class="step-n">02</div>
+      <div>
+        <div class="step-title">Event-Driven Trigger — Lambda + Kinesis</div>
+        <div class="step-desc">An AWS Lambda function monitors S3 for new file arrivals. The moment data lands, it publishes an event to Amazon Kinesis which triggers the Databricks processing cluster. No polling, no wasted compute — processing fires only when data is actually present.</div>
+        <div class="step-tags"><span class="tag g">AWS Lambda</span><span class="tag g">Amazon Kinesis</span><span class="tag g">API Gateway</span><span class="tag g">AWS Glue</span></div>
+      </div>
+      <div class="step-status"><span class="sdot g"></span>Complete</div>
+    </div>
+    <div class="pipe-step done">
+      <div class="step-n">03</div>
+      <div>
+        <div class="step-title">Bronze Layer — Raw Ingestion</div>
+        <div class="step-desc">Databricks writes all incoming data to the Bronze layer exactly as received — no schema enforcement, no transformations. This immutable layer preserves the full history and allows any downstream layer to be reprocessed from source at any point.</div>
+        <div class="step-tags"><span class="tag b">Databricks</span><span class="tag b">PySpark</span><span class="tag g">AWS S3</span><span class="tag b">Unity Catalog</span></div>
+      </div>
+      <div class="step-status"><span class="sdot g"></span>Complete</div>
+    </div>
+    <div class="pipe-step done">
+      <div class="step-n">04</div>
+      <div>
+        <div class="step-title">Silver Layer — Structure and Trust</div>
+        <div class="step-desc">Spark jobs unpack nested JSON payloads, resolve duplicate records, standardize data types, and run automated quality validation. Only records that pass all checks advance. Failed records are flagged and quarantined for review without affecting the Bronze source.</div>
+        <div class="step-tags"><span class="tag b">PySpark</span><span class="tag b">Spark SQL</span><span class="tag b">Databricks</span><span class="tag g">Glue Catalog</span></div>
+      </div>
+      <div class="step-status"><span class="sdot g"></span>Complete</div>
+    </div>
+    <div class="pipe-step done">
+      <div class="step-n">05</div>
+      <div>
+        <div class="step-title">Gold Layer — dbt Dimensional Modeling</div>
+        <div class="step-desc">dbt Cloud builds the analytics-ready Gold layer: a Snowflake schema normalized to 3NF with dimensional models for videos, channels, and engagement metrics. Source freshness checks, referential integrity tests, and null constraints run on every deployment. All logic is version-controlled SQL.</div>
+        <div class="step-tags"><span class="tag p">dbt Cloud</span><span class="tag p">Snowflake Schema</span><span class="tag p">3NF</span><span class="tag g">AWS Athena</span></div>
+      </div>
+      <div class="step-status"><span class="sdot g"></span>Complete</div>
+    </div>
+    <div class="pipe-step done">
+      <div class="step-n">06</div>
+      <div>
+        <div class="step-title">Infrastructure as Code</div>
+        <div class="step-desc">All infrastructure — S3 buckets, Lambda functions, Databricks clusters, VPCs — defined in Terraform and provisioned reproducibly. Ansible manages configuration. Docker handles local environments. GitHub Actions runs CI/CD on every commit.</div>
+        <div class="step-tags"><span class="tag o">Terraform</span><span class="tag o">Ansible</span><span class="tag o">Docker</span><span class="tag g">GitHub Actions</span></div>
+      </div>
+      <div class="step-status"><span class="sdot g"></span>Complete</div>
+    </div>
+  </div>
+  <div class="terminal">
+    <div class="t-bar"><span class="td"></span><span class="td"></span><span class="td"></span><span class="t-filename">airflow_dag_run.log — youtube_ingestion_pipeline</span></div>
+    <div class="t-body">
+      <div class="tl"><span class="to">[08:02:11]</span><span class="ti">INFO</span><span class="tc">Starting DAG: youtube_metadata_ingestion</span></div>
+      <div class="tl"><span class="to">[08:02:13]</span><span class="ti">INFO</span><span class="tc">Fetching metadata for 47 videos from YouTube API...</span></div>
+      <div class="tl"><span class="to">[08:02:45]</span><span class="ts">✓</span><span class="tc">Metadata written → s3://ml-platform-raw/metadata/2023-11-14/</span></div>
+      <div class="tl"><span class="to">[08:03:01]</span><span class="ti">INFO</span><span class="tc">Whisper transcription task started — 47 audio tracks queued</span></div>
+      <div class="tl"><span class="to">[08:11:29]</span><span class="ts">✓</span><span class="tc">Transcriptions written → s3://ml-platform-raw/transcriptions/2023-11-14/</span></div>
+      <div class="tl"><span class="to">[08:11:31]</span><span class="tw">EVENT</span><span class="tc">Lambda fired — Kinesis stream ml-platform-ingest updated</span></div>
+      <div class="tl"><span class="to">[08:11:44]</span><span class="ti">INFO</span><span class="tc">Databricks cluster ml-platform-cluster spinning up...</span></div>
+      <div class="tl"><span class="to">[08:14:02]</span><span class="ts">✓</span><span class="tc">Bronze write complete — 47 records, 0 failures</span></div>
+      <div class="tl"><span class="to">[08:14:38]</span><span class="ts">✓</span><span class="tc">Silver validation passed — 47/47 records cleared all quality checks</span></div>
+      <div class="tl"><span class="to">[08:15:10]</span><span class="ti">INFO</span><span class="tc">dbt Cloud job triggered — gold_layer_refresh</span></div>
+      <div class="tl"><span class="to">[08:17:03]</span><span class="ts">✓</span><span class="tc">dbt run complete — 14 models built, 31 tests passed</span></div>
+      <div class="tl"><span class="to">[08:17:04]</span><span class="ts">✓✓</span><span class="tc">Pipeline SUCCESS — elapsed: 14m53s</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- LAYERS -->
+<div id="section-layers" class="section">
+  <div class="sec-header">
+    <div class="sec-label">// Medallion Architecture</div>
+    <h2 class="sec-title">Three Layers, One Source of Truth</h2>
+    <p class="sec-desc">The Medallion pattern separates ingestion, validation, and modeling into discrete layers. Each layer has a clear contract with the layers above and below it.</p>
+  </div>
+  <div class="layers-grid">
+    <div class="layer-card bronze">
+      <div class="layer-icon">🥉</div>
+      <div class="layer-name">Bronze</div>
+      <div class="layer-sub">RAW · IMMUTABLE · APPEND-ONLY</div>
+      <div class="layer-desc">Every record written exactly as received from source. No schema enforcement, no transformations. This is the permanent, replayable record of everything ever ingested.</div>
+      <div class="layer-metrics">
+        <div class="metric"><div class="metric-val">JSON</div><div class="metric-key">Metadata format</div></div>
+        <div class="metric"><div class="metric-val">Parquet</div><div class="metric-key">Transcript format</div></div>
+      </div>
+    </div>
+    <div class="layer-card silver">
+      <div class="layer-icon">🥈</div>
+      <div class="layer-name">Silver</div>
+      <div class="layer-sub">STRUCTURED · VALIDATED · DEDUPED</div>
+      <div class="layer-desc">Spark jobs enforce schema, resolve duplicates, standardize types, and run automated quality checks. Only validated records advance. Failed records are quarantined without touching Bronze.</div>
+      <div class="layer-metrics">
+        <div class="metric"><div class="metric-val">100%</div><div class="metric-key">Test coverage</div></div>
+        <div class="metric"><div class="metric-val">3NF</div><div class="metric-key">Normal form</div></div>
+      </div>
+    </div>
+    <div class="layer-card gold">
+      <div class="layer-icon">🥇</div>
+      <div class="layer-name">Gold</div>
+      <div class="layer-sub">ANALYTICS-READY · DBT-TESTED</div>
+      <div class="layer-desc">dbt Cloud builds dimensional models and computes engagement metrics. Referential integrity tests run on every deployment. Analysts query this layer directly via Athena.</div>
+      <div class="layer-metrics">
+        <div class="metric"><div class="metric-val">14</div><div class="metric-key">dbt models</div></div>
+        <div class="metric"><div class="metric-val">31</div><div class="metric-key">dbt tests</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="terminal">
+    <div class="t-bar"><span class="td"></span><span class="td"></span><span class="td"></span><span class="t-filename">dbt_run_output.log — gold_layer_refresh</span></div>
+    <div class="t-body">
+      <div class="tl"><span class="tp">$</span><span class="tc">dbt run --select gold --profiles-dir .</span></div>
+      <div class="tl"><span class="to">Running with dbt=1.7.0 · Found 14 models, 31 tests, 3 sources</span></div>
+      <br>
+      <div class="tl"><span class="ts">✓</span><span class="tc">dim_videos ........................ [OK in 1.23s]</span></div>
+      <div class="tl"><span class="ts">✓</span><span class="tc">dim_channels ...................... [OK in 0.98s]</span></div>
+      <div class="tl"><span class="ts">✓</span><span class="tc">dim_dates ......................... [OK in 0.61s]</span></div>
+      <div class="tl"><span class="ts">✓</span><span class="tc">fct_video_performance ............. [OK in 2.44s]</span></div>
+      <div class="tl"><span class="ts">✓</span><span class="tc">fct_engagement_events ............. [OK in 1.87s]</span></div>
+      <div class="tl"><span class="ts">✓</span><span class="tc">mart_content_analytics ............ [OK in 3.12s]</span></div>
+      <br>
+      <div class="tl"><span class="tp">$</span><span class="tc">dbt test --select gold</span></div>
+      <div class="tl"><span class="ts">✓</span><span class="tc">31 of 31 tests passed · All source freshness checks OK</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- STACK -->
+<div id="section-stack" class="section">
+  <div class="sec-header">
+    <div class="sec-label">// Technologies</div>
+    <h2 class="sec-title">Full Tech Stack</h2>
+    <p class="sec-desc">Every layer of the platform is built with production-grade tooling. Each technology was chosen deliberately.</p>
+  </div>
+  <div class="stack-grid">
+    <div class="stack-row"><div class="stack-icon">🔧</div><div><div class="stack-name">Terraform + Ansible</div><div class="stack-cat">Infrastructure as Code</div></div></div>
+    <div class="stack-row"><div class="stack-icon">🐳</div><div><div class="stack-name">Docker + Docker Compose</div><div class="stack-cat">Containerization</div></div></div>
+    <div class="stack-row"><div class="stack-icon">⚙️</div><div><div class="stack-name">GitHub Actions</div><div class="stack-cat">CI/CD</div></div></div>
+    <div class="stack-row"><div class="stack-icon">🌀</div><div><div class="stack-name">Apache Airflow</div><div class="stack-cat">Pipeline Orchestration</div></div></div>
+    <div class="stack-row"><div class="stack-icon">λ</div><div><div class="stack-name">AWS Lambda + Kinesis</div><div class="stack-cat">Event-driven Ingestion</div></div></div>
+    <div class="stack-row"><div class="stack-icon">🪣</div><div><div class="stack-name">AWS S3 + API Gateway</div><div class="stack-cat">Storage & Eventing</div></div></div>
+    <div class="stack-row"><div class="stack-icon">⚡</div><div><div class="stack-name">Databricks + PySpark</div><div class="stack-cat">Distributed Processing</div></div></div>
+    <div class="stack-row"><div class="stack-icon">🔍</div><div><div class="stack-name">AWS Glue + Athena</div><div class="stack-cat">Cataloging & Querying</div></div></div>
+    <div class="stack-row"><div class="stack-icon">📐</div><div><div class="stack-name">dbt Cloud</div><div class="stack-cat">Transformation & Modeling</div></div></div>
+    <div class="stack-row"><div class="stack-icon">🎙️</div><div><div class="stack-name">OpenAI Whisper</div><div class="stack-cat">AI Audio Transcription</div></div></div>
+    <div class="stack-row"><div class="stack-icon">📊</div><div><div class="stack-name">AWS Athena</div><div class="stack-cat">Analytics Querying</div></div></div>
+  </div>
+</div>
+
+<!-- ROADMAP -->
+<div id="section-roadmap" class="section">
+  <div class="sec-header">
+    <div class="sec-label">// Honest Progress</div>
+    <h2 class="sec-title">Built vs. Planned</h2>
+    <p class="sec-desc">The data engineering core is production-ready. The AI inference layer is next in line.</p>
+  </div>
+  <div class="rm-grid">
+    <div class="rm-card built"><div class="rm-badge built">✓ BUILT</div><div class="rm-title">End-to-End Ingestion Pipeline</div><div class="rm-desc">YouTube API → Airflow → S3 → Lambda → Kinesis → Databricks. Fully automated, event-driven, zero manual steps.</div></div>
+    <div class="rm-card built"><div class="rm-badge built">✓ BUILT</div><div class="rm-title">Medallion Architecture (Bronze/Silver/Gold)</div><div class="rm-desc">Three-layer data architecture with schema enforcement, deduplication, and quality gates at each stage.</div></div>
+    <div class="rm-card built"><div class="rm-badge built">✓ BUILT</div><div class="rm-title">dbt Dimensional Modeling</div><div class="rm-desc">14 models, 31 automated tests, Snowflake schema in 3NF. Source freshness and referential integrity checks on every deployment.</div></div>
+    <div class="rm-card built"><div class="rm-badge built">✓ BUILT</div><div class="rm-title">AI Transcription with Whisper</div><div class="rm-desc">OpenAI Whisper processes video audio and writes full-text transcriptions as Parquet alongside metadata in S3.</div></div>
+    <div class="rm-card built"><div class="rm-badge built">✓ BUILT</div><div class="rm-title">Infrastructure as Code</div><div class="rm-desc">Terraform + Ansible define all infrastructure. Docker handles local environments. GitHub Actions runs CI/CD on every push.</div></div>
+    <div class="rm-card planned"><div class="rm-badge planned">◷ PLANNED</div><div class="rm-title">LLM Fine-tuning on SageMaker</div><div class="rm-desc">Fine-tune a Hugging Face model on the transcription corpus using PEFT techniques. Django scaffold exists; SageMaker deployment pending.</div></div>
+    <div class="rm-card planned"><div class="rm-badge planned">◷ PLANNED</div><div class="rm-title">Django Q&A App on AWS ECS</div><div class="rm-desc">Deploy the inference interface via Django on ECS. Application code is scaffolded; ECS Terraform and model wiring in progress.</div></div>
+    <div class="rm-card planned"><div class="rm-badge planned">◷ PLANNED</div><div class="rm-title">Real-time Streaming with Kafka</div><div class="rm-desc">Replace batch ingestion with Spark Structured Streaming and Kafka for continuous, real-time data availability.</div></div>
+    <div class="rm-card planned"><div class="rm-badge planned">◷ PLANNED</div><div class="rm-title">BI Dashboard (Power BI / Looker)</div><div class="rm-desc">Connect Power BI or Looker to the Gold layer for live content performance dashboards.</div></div>
+  </div>
+</div>
+
+<footer>
+  Built by <a href="https://github.com/AtharvaGitProfile">Atharva</a> &nbsp;·&nbsp; AWS + Databricks + dbt &nbsp;·&nbsp; <a href="https://github.com/AtharvaGitProfile/Databricks-ML-Platform">View on GitHub →</a>
+</footer>
+
+<script>
+function show(name){
+  document.querySelectorAll('.section').forEach(s=>{s.classList.remove('active');s.style.display='none';});
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  const s=document.getElementById('section-'+name);
+  if(s){s.classList.add('active');s.style.display=(name==='overview'?'flex':'block');}
+  const tabs=document.querySelectorAll('.nav-tab');
+  const names=['overview','pipeline','layers','stack','roadmap'];
+  const i=names.indexOf(name);
+  if(i>=0&&tabs[i])tabs[i].classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
