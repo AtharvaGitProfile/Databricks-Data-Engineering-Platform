@@ -1,4 +1,4 @@
-# From Raw Video to Business Intelligence: A Production-Grade Data Platform on AWS and Databricks
+# From Raw Video to Business Intelligence: A Production-Grade ML Data Platform on AWS and Databricks
 
 ![Data Engineer](https://github.com/AtharvaGitProfile/Databricks-ML-Platform/blob/main/DB.png)
 
