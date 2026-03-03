@@ -225,4 +225,4 @@ dbt deps && dbt run --select staging gold && dbt test
 
 ## About
 
-Built by [Atharva](https://github.com/AtharvaGitProfile) · [GitHub Repo](https://github.com/AtharvaGitProfile/Databricks-Data-Engineering-Platform) · [LinkedIn](#)
+[LinkedIn](#)
