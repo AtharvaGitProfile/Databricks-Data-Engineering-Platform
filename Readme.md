@@ -10,13 +10,6 @@
   <a href="#">LinkedIn</a>
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/AWS-Databricks-orange?style=flat-square" />
-  <img src="https://img.shields.io/badge/dbt-Cloud-green?style=flat-square" />
-  <img src="https://img.shields.io/badge/Airflow-Orchestrated-blue?style=flat-square" />
-  <img src="https://img.shields.io/badge/Architecture-Medallion-gold?style=flat-square" />
-  <img src="https://img.shields.io/badge/IaC-Terraform-purple?style=flat-square" />
-</p>
 
 ---
 
