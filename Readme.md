@@ -187,7 +187,7 @@ Public datasets arrive pre-cleaned and pre-structured. They do not surface the r
 - All infrastructure defined as code in Terraform and Ansible
 - CI/CD pipeline via GitHub Actions
 
-### 🔜 In Progress / Planned
+### 🔜 In Progress 
 
 - **LLM fine-tuning on Amazon SageMaker** using Hugging Face PEFT techniques. 
 - **Real-time streaming** with Spark Structured Streaming and Kafka to replace the current batch ingestion
