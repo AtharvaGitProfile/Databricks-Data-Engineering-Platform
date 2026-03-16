@@ -148,15 +148,6 @@ Public datasets arrive pre-cleaned and pre-structured. They do not surface the r
 │   ├── lambda_kinesis.py         # Kinesis-trigger Lambda function
 │   └── README.md
 │
-├── application/
-│   ├── application/              # Django project settings
-│   ├── apps/alunos/              # Django app scaffold (inference layer — in progress)
-│   ├── infra/                    # ECS Terraform definitions (planned deployment)
-│   ├── static/ · templates/      # Static assets and HTML templates
-│   ├── Dockerfile
-│   ├── manage.py
-│   └── requirements.txt
-│
 ├── data/
 │   ├── bronze/                   # Sample Bronze layer data
 │   ├── silver/                   # Sample Silver layer data
